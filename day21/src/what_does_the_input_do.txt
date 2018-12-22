@@ -1,0 +1,38 @@
+00	
+01	
+02	
+03	if (123 & 456) != 72
+04	  goto 1
+05	R5 = 0
+06*	R2 = R5 | 65536
+07	R5 = 10362650
+08*	while true: R4 = R2 & 255
+09	  R5 = ((R5 + R4) & 16777215 * 65899) & 16777215
+10	
+11	
+12	
+13	  if 256 > R2
+14	
+15	
+16	    goto 28
+17	  for R4 = 0; (R4 + 1) * 256 <= R2; R4 = R4 + 1;
+18 	  (SEE NOTE BELOW. We can replace l17 with R4 = R2 / 256.)
+19	   
+20	   
+21	
+22	
+23	
+24	
+25	
+26*	  R2 = R2 / 256
+27	  goto 8
+28*	if R5 == R0
+29	 terminate
+30	goto 6
+
+
+We want to solve the inequality on line 17:
+(R4 + 1) * 256 > R2
+ -> R4 + 1 > R2/256
+ -> R4 > R2/256 - 1
+ -> R4 = R2/256 
