@@ -1,8 +1,0 @@
-[package]
-name = "day17"
-version = "0.1.0"
-authors = ["Joshua Netterfield <joshua@nettek.ca>"]
-edition = "2018"
-
-[dependencies]
-regex = "1.1.0"

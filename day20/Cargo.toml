@@ -1,7 +1,0 @@
-[package]
-name = "day20"
-version = "0.1.0"
-authors = ["Joshua Netterfield <joshua@nettek.ca>"]
-edition = "2018"
-
-[dependencies]
