@@ -1,0 +1,8 @@
+[package]
+name = "p2019_10"
+version = "0.1.0"
+authors = ["Joshua Netterfield <joshua@nettek.ca>"]
+edition = "2018"
+
+[dependencies]
+num = "0.2.0"
