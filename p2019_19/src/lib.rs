@@ -42,14 +42,27 @@ fn resolve_3(ram: &HashMap<usize, i64>, pc: usize, rb: i64) -> (i64, i64, i64) {
     )
 }
 
+pub fn good(hm: &HashSet<(i64, i64)>, x: usize, y: usize) -> bool {
+    for x2 in x..x + 100 {
+        for y2 in y..y + 100 {
+            if !hm.contains(&(x2 as i64, y2 as i64)) {
+                return false;
+            }
+        }
+    }
+
+    true
+}
+
 pub fn exec(mut ram: HashMap<usize, i64>) -> i64 {
     let initial_ram = ram.clone();
+    let mut hm = HashSet::new();
     let mut pc = 0;
     let mut rb: i64 = 0;
 
-    let mut pos = (0, 0);
+    let mut pos = (0, 600);
     let mut parity = 0;
-    let mut count = 0;
+    let max = 1500;
 
     loop {
         loop {
@@ -82,14 +95,8 @@ pub fn exec(mut ram: HashMap<usize, i64>) -> i64 {
                         parity = 1;
                     } else {
                         mod_value = Some(pos.1);
-                        pos.0 += 1;
-                        if pos.0 == 50 {
-                            pos.0 = 0;
-                            pos.1 += 1;
-                        }
                         parity = 0;
                     }
-                    eprintln!("GIVE {:?}", mod_value);
 
                     let p1 = im(&ram, pc, 1, rb);
                     mod_idx = Some(p1);
@@ -98,14 +105,35 @@ pub fn exec(mut ram: HashMap<usize, i64>) -> i64 {
                 // out
                 4 => {
                     let val = resolve(&ram, pc, 1, rb);
-                    eprintln!(">> {}", val);
+                    // eprintln!(">> {}", val);
 
                     if val == 1 {
-                        count += 1;
+                        hm.insert(pos);
                     }
 
-                    if pos.1 == 50 {
-                        return count;
+                    pos.0 += 1;
+                    if pos.0 == max {
+                        eprintln!("{}", pos.1);
+                        for x in 0..max {
+                            if hm.contains(&(x as i64, pos.1 as i64)) {
+                                eprint!("#");
+                            } else {
+                                eprint!(".");
+                            }
+                        }
+                        pos.0 = 0;
+                        pos.1 += 1;
+                    }
+
+                    if pos.1 == max {
+                        for y in 0..max {
+                            for x in 0..max {
+                                if good(&hm, x as usize, y as usize) {
+                                    return (x * 10000 + y) as i64;
+                                }
+                            }
+                        }
+                        return 0;
                     }
 
                     mod_idx = None;
@@ -204,6 +232,7 @@ pub fn part_a(input: &str) -> i64 {
 mod tests {
     #[test]
     fn part_a() {
+        // Not 650089
         assert_eq!(super::part_a(include_str!("input.txt")), 217);
     }
 
