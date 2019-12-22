@@ -1,0 +1,6 @@
+0: A
+1: S + IA
+2: S + I(S + IA) = S + SI + AI^2
+3: S + I(S + SI + AI^2) = S + SI + SI^2 + AI^3
+n: S + SI + SI^2 + ... + SI^(n - 1) + AI^n
+ = S * (1 - I^n) / (1 - I) + AI^n
