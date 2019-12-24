@@ -1,34 +1,85 @@
-// use std::collections::{BinaryHeap, BTreeSet, HashMap, BTreeMap, BTreeSet};
 use std::collections::BTreeSet;
 
-fn adj_count(t: &BTreeSet<(i8, i8)>, x: i8, y: i8) -> u8 {
+fn adj_count(t: &BTreeSet<(i8, i8, i8)>, l: i8, x: i8, y: i8) -> u8 {
     let mut sum = 0;
-    if t.contains(&(x - 1, y)) {
+    // Adj
+    if t.contains(&(l, x - 1, y)) {
         sum += 1;
     }
-    if t.contains(&(x + 1, y)) {
+    if t.contains(&(l, x + 1, y)) {
         sum += 1;
     }
-    if t.contains(&(x, y - 1)) {
+    if t.contains(&(l, x, y - 1)) {
         sum += 1;
     }
-    if t.contains(&(x, y + 1)) {
+    if t.contains(&(l, x, y + 1)) {
         sum += 1;
+    }
+
+    // Outside
+    if x == 0 && t.contains(&(l + 1, 1, 2)) {
+        sum += 1;
+    }
+    if y == 0 && t.contains(&(l + 1, 2, 1)) {
+        sum += 1;
+    }
+    if x == 4 && t.contains(&(l + 1, 3, 2)) {
+        sum += 1;
+    }
+    if y == 4 && t.contains(&(l + 1, 2, 3)) {
+        sum += 1;
+    }
+
+    // Inside
+    if x == 1 && y == 2 {
+        for y2 in 0..5 {
+            if t.contains(&(l - 1, 0, y2)) {
+                sum += 1;
+            }
+        }
+    }
+    if x == 2 && y == 1 {
+        for x2 in 0..5 {
+            if t.contains(&(l - 1, x2, 0)) {
+                sum += 1;
+            }
+        }
+    }
+    if x == 3 && y == 2 {
+        for y2 in 0..5 {
+            if t.contains(&(l - 1, 4, y2)) {
+                sum += 1;
+            }
+        }
+    }
+    if x == 2 && y == 3 {
+        for x2 in 0..5 {
+            if t.contains(&(l - 1, x2, 4)) {
+                sum += 1;
+            }
+        }
     }
 
     sum
 }
 
-fn next(t: &BTreeSet<(i8, i8)>, w: i8, h: i8) -> BTreeSet<(i8, i8)> {
+fn next(t: &BTreeSet<(i8, i8, i8)>) -> BTreeSet<(i8, i8, i8)> {
+    let min = t.iter().min_by_key(|k| k.0).unwrap().0;
+    let max = t.iter().max_by_key(|k| k.0).unwrap().0;
     let mut hs = BTreeSet::new();
-    for x in 0..w {
-        for y in 0..h {
-            let count = adj_count(t, x, y);
-            let v = t.contains(&(x, y));
-            if v && count == 1 {
-                hs.insert((x, y));
-            } else if !v && (count == 1 || count == 2) {
-                hs.insert((x, y));
+    for level in (min - 1)..=(max + 1) {
+        for x in 0..5 {
+            for y in 0..5 {
+                if x == 2 && y == 2 {
+                    continue;
+                }
+                let count = adj_count(t, level, x, y);
+                let v = t.contains(&(level, x, y));
+                if v && count == 1 {
+                    hs.insert((level, x, y));
+                } else if !v && (count == 1 || count == 2) {
+                    hs.insert((level, x, y));
+                }
             }
         }
     }
@@ -36,36 +87,7 @@ fn next(t: &BTreeSet<(i8, i8)>, w: i8, h: i8) -> BTreeSet<(i8, i8)> {
     hs
 }
 
-fn bio(t: &BTreeSet<(i8, i8)>, w: i8, h: i8) -> i64 {
-    let mut incr = 1;
-    let mut score = 0;
-    for y in 0..h {
-        for x in 0..w {
-            if t.contains(&(x, y)) {
-                score += incr;
-            }
-            incr *= 2;
-        }
-    }
-
-    score
-}
-
-fn print(t: &BTreeSet<(i8, i8)>, w: i8, h: i8) {
-    for y in 0..h {
-        for x in 0..w {
-            if t.contains(&(x, y)) {
-                eprint!("#");
-            } else {
-                eprint!(".");
-            }
-        }
-        eprintln!();
-    }
-    eprintln!();
-}
-
-pub fn part_a(input: &str) -> i64 {
+pub fn part_b(input: &str) -> usize {
     let t: Vec<Vec<char>> = input
         .split('\n')
         .filter(|line| line != &"")
@@ -77,33 +99,22 @@ pub fn part_a(input: &str) -> i64 {
     for y in 0..h {
         for x in 0..w {
             if t[y as usize][x as usize] == '#' {
-                hs.insert((x as i8, y as i8));
+                hs.insert((0 as i8, x as i8, y as i8));
             }
         }
     }
 
-    let mut seen = BTreeSet::new();
-    seen.insert(hs.clone());
-
-    loop {
-        hs = next(&hs, w, h);
-        if seen.contains(&hs) {
-            print(&hs, w, h);
-            return bio(&hs, w, h);
-        }
-        seen.insert(hs.clone());
+    for _ in 0..200 {
+        hs = next(&hs);
     }
+
+    hs.len()
 }
 
 #[cfg(test)]
 mod tests {
-    // #[test]
-    // fn example1() {
-    //     assert_eq!(super::part_a("12\n"), 2);
-    // }
-
     #[test]
-    fn part_a() {
-        assert_eq!(super::part_a(include_str!("input.txt")), 28615131);
+    fn part_b() {
+        assert_eq!(super::part_b(include_str!("input.txt")), 1926);
     }
 }
