@@ -1,5 +1,5 @@
 [package]
-name = "p2019_24"
+name = "p2019_24a"
 version = "0.1.0"
 authors = ["Joshua Netterfield <joshua@nettek.ca>"]
 edition = "2018"
