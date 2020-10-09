@@ -9,7 +9,7 @@ fi
 
 set -x
 cp -fr ./$template ./$new 
-find ./p2016_02 -type f -printf "sed -i \"s/$template/$new/g\" %p\n" | bash
+find ./$new -type f -printf "sed -i \"s/$template/$new/g\" %p\n" | bash
 sed -i "/members/ a \    \"$new\"," ./Cargo.toml
 git add .
 ./watch.sh $new
