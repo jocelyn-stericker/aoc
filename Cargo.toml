@@ -1,5 +1,7 @@
 [workspace]
 members = [
+    "p20xx_template",
+    "p2016_13",
     "p2016_12",
     "p2016_11",
     "p2016_10",
