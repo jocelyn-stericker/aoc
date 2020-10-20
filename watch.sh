@@ -14,4 +14,4 @@ trap commit SIGINT
 
 set -x
 
-cargo watch -x "test -p $project"
+cargo watch -x "test -p $project --release -- --nocapture"
