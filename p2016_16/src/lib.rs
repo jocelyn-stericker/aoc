@@ -75,7 +75,7 @@ mod tests {
     fn part_b() {
         assert_eq!(
             super::part_a(include_str!("input.txt"), 35651584),
-            "10101001010100001"
-        ); // 16:33
+            "10100001110101001",
+        ); // 17:50
     }
 }
