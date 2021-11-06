@@ -61,6 +61,17 @@ mod tests {
 
     #[test]
     fn part_a() {
-        assert_eq!(super::part_a(include_str!("input.txt")), String::from(""));
+        assert_eq!(
+            super::part_a(include_str!("input.txt")),
+            String::from("cqjxxyzz")
+        );
+    }
+
+    #[test]
+    fn part_b() {
+        assert_eq!(
+            super::part_a(&super::part_a(include_str!("input.txt"))),
+            String::from("cqkaabcc")
+        );
     }
 }
