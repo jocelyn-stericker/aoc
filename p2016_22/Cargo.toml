@@ -1,0 +1,8 @@
+[package]
+name = "p2016_22"
+version = "0.1.0"
+authors = ["Joshua Netterfield <joshua@nettek.ca>"]
+edition = "2018"
+
+[dependencies]
+regex = "1.5.4"
