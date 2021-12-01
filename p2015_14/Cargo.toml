@@ -1,7 +1,7 @@
 [package]
 name = "p2015_14"
 version = "0.1.0"
-authors = ["Joshua Netterfield <joshua@nettek.ca>"]
+authors = ["Jocelyn Stericker <jocelyn@nettek.ca>"]
 edition = "2018"
 
 [dependencies]
