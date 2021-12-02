@@ -5,8 +5,8 @@ pub fn part_a(input: &str) -> i64 {
         .map(|l| l.parse::<i64>().unwrap())
         .collect();
     let mut increases = 0;
-    for i in 1..c.len() {
-        if c[i] > c[i - 1] {
+    for window in c.windows(2) {
+        if window[1] > window[0] {
             increases += 1;
         }
     }
@@ -20,11 +20,8 @@ pub fn part_b(input: &str) -> i64 {
         .map(|l| l.parse::<i64>().unwrap())
         .collect();
     let mut increases = 0;
-    for i in 3..c.len() {
-        let a = c[i] + c[i - 1] + c[i - 2];
-        let b = c[i - 1] + c[i - 2] + c[i - 3];
-
-        if a > b {
+    for window in c.windows(4) {
+        if window[3] > window[0] {
             increases += 1;
         }
     }
