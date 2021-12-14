@@ -1,77 +1,81 @@
 use std::collections::HashSet;
 
-pub fn print(paper: &HashSet<(i64, i64)>) -> String {
-    let min_y = paper.iter().map(|p| p.0).min().unwrap();
-    let min_x = paper.iter().map(|p| p.1).min().unwrap();
-    let max_y = paper.iter().map(|p| p.0).max().unwrap();
-    let max_x = paper.iter().map(|p| p.1).max().unwrap();
-    let mut s = String::new();
-    for y in min_y..=max_y {
-        for x in min_x..=max_x {
-            if paper.contains(&(y, x)) {
-                s.push('#');
-            } else {
-                s.push('.');
-            }
-        }
-        s.push('\n');
-    }
-    s
-}
-
 pub fn solve(input: &str) -> (usize, String) {
-    let mut paper: HashSet<(i64, i64)> = HashSet::new();
+    let mut points: HashSet<(i64, i64)> = HashSet::new();
     let mut lines = input.trim().split('\n');
-    loop {
-        let line = lines.next().unwrap();
+
+    for line in lines.by_ref() {
         if line.is_empty() {
             break;
         }
         let (x, y) = line.split_once(',').unwrap();
-        paper.insert((y.parse().unwrap(), x.parse().unwrap()));
+        points.insert((y.parse().unwrap(), x.parse().unwrap()));
     }
 
     let mut part_a = 0;
 
-    for (y, line) in lines.enumerate() {
-        let (_, split) = line.split_once("fold along ").unwrap();
-        let (axis, pos) = split.split_once('=').unwrap();
-        let pos: i64 = pos.parse().unwrap();
+    for (i, line) in lines.enumerate() {
+        let (_, instruction) = line.split_once("fold along ").unwrap();
+        let (axis, split) = instruction.split_once('=').unwrap();
+        let split: i64 = split.parse().unwrap();
         match axis {
             "x" => {
-                let mut new_paper = HashSet::new();
-                for (y, x) in paper.iter() {
-                    assert!(*x != pos);
-                    if *x < pos {
-                        new_paper.insert((*y, *x));
+                let mut new_points = HashSet::new();
+                for (y, x) in points.iter() {
+                    if *x == split {
+                        panic!();
+                    }
+
+                    if *x < split {
+                        new_points.insert((*y, *x));
                     } else {
-                        new_paper.insert((*y, pos - (*x - pos)));
+                        new_points.insert((*y, split - (*x - split)));
                     }
                 }
-                paper = new_paper;
+                points = new_points;
             }
             "y" => {
-                let mut new_paper = HashSet::new();
-                for (y, x) in paper.iter() {
-                    assert!(*y != pos);
-                    if *y < pos {
-                        new_paper.insert((*y, *x));
+                let mut new_points = HashSet::new();
+                for (y, x) in points.iter() {
+                    if *y == split {
+                        panic!();
+                    }
+
+                    if *y < split {
+                        new_points.insert((*y, *x));
                     } else {
-                        new_paper.insert((pos - (*y - pos), *x));
+                        new_points.insert((split - (*y - split), *x));
                     }
                 }
-                paper = new_paper;
+                points = new_points;
             }
             _ => {
                 panic!();
             }
         }
-        if y == 0 {
-            part_a = paper.len()
+
+        if i == 0 {
+            part_a = points.len();
         }
     }
 
-    (part_a, print(&paper))
+    let mut message = String::new();
+    let min_x = points.iter().map(|(_, x)| *x).min().unwrap();
+    let max_x = points.iter().map(|(_, x)| *x).max().unwrap();
+    let min_y = points.iter().map(|(y, _)| *y).min().unwrap();
+    let max_y = points.iter().map(|(y, _)| *y).max().unwrap();
+    for y in min_y..=max_y {
+        for x in min_x..=max_x {
+            if points.contains(&(y, x)) {
+                message.push('#');
+            } else {
+                message.push('.');
+            }
+        }
+        message.push('\n');
+    }
+
+    (part_a, message)
 }
 
 #[cfg(test)]
@@ -100,7 +104,7 @@ mod tests {
 9,0
 
 fold along y=7
-fold along x=5",
+fold along x=5"
             ),
             (
                 17,
@@ -118,7 +122,7 @@ fold along x=5",
     }
 
     #[test]
-    fn solve() {
+    fn part_a() {
         assert_eq!(
             super::solve(include_str!("input.txt")),
             (
