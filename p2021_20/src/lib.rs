@@ -76,6 +76,10 @@ pub fn solve(input: &str, iter: usize) -> usize {
     }
 
     let mut border = false;
+    if algorithm[0] == '#' {
+        assert!(algorithm[511] == '.');
+        // Otherwise, the answer will be infinity.
+    }
     let should_swap = algorithm[0] == '#';
     for _ in 0..iter {
         on = enhance(on, &algorithm, border);
