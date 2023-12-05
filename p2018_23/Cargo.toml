@@ -5,4 +5,4 @@ authors = ["Jocelyn Stericker <jocelyn@nettek.ca>"]
 edition = "2018"
 
 [dependencies]
-z3 = "0.3.0"
+z3 = {version="0.5.1", features = ["static-link-z3"]}

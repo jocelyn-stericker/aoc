@@ -1,11 +1,11 @@
-use z3::{Ast, Config, Context, Optimize};
+use z3::{ast::Int, Config, Context, Optimize, SatResult};
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
 struct Bot((i64, i64, i64), i64);
 
-fn z_abs<'a>(context: &'a Context, num: &Ast<'a>) -> Ast<'a> {
-    num.ge(&context.from_i64(0))
-        .ite(num, &num.mul(&[&context.from_i64(-1)]))
+fn z_abs<'a>(context: &'a Context, num: &Int<'a>) -> Int<'a> {
+    num.ge(&Int::from_i64(context, 0))
+        .ite(num, &num.mul(&[&Int::from_i64(context, -1)]))
 }
 
 impl Bot {
@@ -16,15 +16,24 @@ impl Bot {
             <= self.1
     }
 
-    fn z_score<'a>(&self, context: &'a Context, for_pt: &(Ast<'a>, Ast<'a>, Ast<'a>)) -> Ast<'a> {
-        let dist = context.from_i64(0).add(&[
-            &z_abs(context, &(for_pt.0.sub(&[&context.from_i64((self.0).0)]))),
-            &z_abs(context, &(for_pt.1.sub(&[&context.from_i64((self.0).1)]))),
-            &z_abs(context, &(for_pt.2.sub(&[&context.from_i64((self.0).2)]))),
+    fn z_score<'a>(&self, context: &'a Context, for_pt: &(Int<'a>, Int<'a>, Int<'a>)) -> Int<'a> {
+        let dist = Int::from_i64(context, 0).add(&[
+            &z_abs(
+                context,
+                &(for_pt.0.sub(&[&Int::from_i64(context, (self.0).0)])),
+            ),
+            &z_abs(
+                context,
+                &(for_pt.1.sub(&[&Int::from_i64(context, (self.0).1)])),
+            ),
+            &z_abs(
+                context,
+                &(for_pt.2.sub(&[&Int::from_i64(context, (self.0).2)])),
+            ),
         ]);
 
-        dist.le(&context.from_i64(self.1))
-            .ite(&context.from_i64(1), &context.from_i64(0))
+        dist.le(&Int::from_i64(context, self.1))
+            .ite(&Int::from_i64(context, 1), &Int::from_i64(context, 0))
     }
 }
 
@@ -66,25 +75,25 @@ pub fn part_b(input: &str) -> u64 {
     let context = Context::new(&config);
 
     let z_pt = (
-        context.named_int_const("x"),
-        context.named_int_const("y"),
-        context.named_int_const("z"),
+        Int::new_const(&context, "x"),
+        Int::new_const(&context, "y"),
+        Int::new_const(&context, "z"),
     );
 
-    let mut z_score = context.from_i64(0);
-    let scores: Vec<Ast> = input.iter().map(|pt| pt.z_score(&context, &z_pt)).collect();
-    let scores: Vec<&Ast> = scores.iter().collect();
+    let mut z_score = Int::from_i64(&context, 0);
+    let scores: Vec<_> = input.iter().map(|pt| pt.z_score(&context, &z_pt)).collect();
+    let scores: Vec<_> = scores.iter().collect();
     z_score = z_score.add(&scores[..]);
 
     let opt = Optimize::new(&context);
     opt.maximize(&z_score);
-    opt.minimize(&context.from_i64(0).add(&[
-        &z_abs(&context, &(z_pt.0.sub(&[&context.from_i64(0)]))),
-        &z_abs(&context, &(z_pt.1.sub(&[&context.from_i64(0)]))),
-        &z_abs(&context, &(z_pt.2.sub(&[&context.from_i64(0)]))),
+    opt.minimize(&Int::from_i64(&context, 0).add(&[
+        &z_abs(&context, &(z_pt.0.sub(&[&Int::from_i64(&context, 0)]))),
+        &z_abs(&context, &(z_pt.1.sub(&[&Int::from_i64(&context, 0)]))),
+        &z_abs(&context, &(z_pt.2.sub(&[&Int::from_i64(&context, 0)]))),
     ]));
 
-    assert_eq!(opt.check(), true);
+    assert_eq!(opt.check(&[]), SatResult::Sat);
     let model = opt.get_model();
 
     let pt = (

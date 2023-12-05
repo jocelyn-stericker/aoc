@@ -196,10 +196,11 @@ pub fn part_a(input: &str) -> i64 {
 
 #[cfg(test)]
 mod tests {
-    #[test]
-    fn part_a() {
-        assert_eq!(super::part_a(include_str!("input.txt")), 242);
-    }
+    // It's interactive!
+    // #[test]
+    // fn part_a() {
+    //     assert_eq!(super::part_a(include_str!("input.txt")), 242);
+    // }
 
     // #[test]
     // fn part_b() {

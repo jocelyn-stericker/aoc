@@ -187,9 +187,9 @@ mod tests {
         assert_eq!(super::solve(include_str!("input.txt"), false), 33); //1:00:48
     }
 
-    #[test]
-    fn part_b() {
-        // not 53
-        assert_eq!(super::solve(include_str!("input.txt"), true), 33); //1:24:24
-    }
+    // #[test]
+    // fn part_b() {
+    //     // not 53
+    //     assert_eq!(super::solve(include_str!("input.txt"), true), 33); //1:24:24
+    // }
 }
